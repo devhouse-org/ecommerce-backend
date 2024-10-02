@@ -4,7 +4,7 @@ import { IsArray, IsEnum, IsNotEmpty, IsNumber } from "class-validator"
 export class CreateOrderDto {
 
     @IsNumber()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'Field userId must be added' })
     userId : number
 
 

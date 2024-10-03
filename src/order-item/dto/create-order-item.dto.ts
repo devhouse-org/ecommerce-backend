@@ -9,7 +9,6 @@ export class CreateOrderItemDto {
     @IsNumber()
     @IsNotEmpty()
     orderId : number
-
         
     @IsNumber()
     @IsNotEmpty()

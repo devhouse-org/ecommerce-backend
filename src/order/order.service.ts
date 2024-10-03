@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -9,13 +9,16 @@ export class OrderService {
   constructor(private readonly prismaService : PrismaService){}
 
   async create(createOrderDto: CreateOrderDto) {
+    const user = await this.prismaService.user.findUnique({ where: { id: createOrderDto.userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
     const order = await this.prismaService.order.create({
       data: {
-        userId: createOrderDto.userId,
-        total: createOrderDto.total,
-        status: createOrderDto.status,
+        ...createOrderDto,
       },
     });
+    return order;
   }
 
   async findAll() {
@@ -23,16 +26,20 @@ export class OrderService {
   }
 
   async findOne(id: number) {
-    return await this.prismaService.order.findUnique({
-      where: {
-        id: id,
-      },
-    });
+    const order = await this.prismaService.order.findUnique({ where: { id } });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    return order;
   }
 
 
   async update(id: number, updateOrderDto: UpdateOrderDto) {
-    const order = await this.prismaService.order.update({
+    const order = await this.prismaService.order.findUnique({ where: { id } });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    const updatedOrder = await this.prismaService.order.update({
       where: {
         id: id,
       },
@@ -43,7 +50,11 @@ export class OrderService {
   
  
   async remove(id: number) {
-    const order = await this.prismaService.order.delete({
+    const order = await this.prismaService.order.findUnique({ where: { id } });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+    await this.prismaService.order.delete({
       where: {
         id: id,
       },

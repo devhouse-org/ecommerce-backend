@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -14,43 +14,43 @@ export class ProductService {
                 ...createProductDto,
             }
         })
-        return product
+        return product 
     }
 
 
     async findAll() {
         const products = await this.prismaService.product.findMany()
-        return products
     }
 
 
     async findOne(id: number) {
-        const product = await this.prismaService.product.findFirst({
-            where : {
-                id : id
-            }
-        })
-        return product
+        const product = await this.prismaService.product.findUnique({ where: { id } });
+        if (!product) {
+            throw new NotFoundException('Product not found');
+        }
+        return product;
     }
 
 
     async update(id: number, updateProductDto: UpdateProductDto) {
-        const product = await this.prismaService.product.update({
-            where : {
-                id : id
-            },
-            data : updateProductDto
-        })
-        return product
+        const product = await this.prismaService.product.findUnique({ where: { id } });
+        if (!product) {
+            throw new NotFoundException('Product not found');
+        }
+        await this.prismaService.product.update({
+            where: { id },
+            data: updateProductDto
+        });
+        return { message: 'Product updated successfully' };
     }
 
 
     async remove(id: number) {
-        const product = await this.prismaService.product.delete({
-            where : {
-                id : id
-            }
-        })
-        return product
+        const product = await this.prismaService.product.findUnique({ where: { id } });
+        if (!product) {
+            throw new NotFoundException('Product not found');
+        }
+        await this.prismaService.product.delete({ where: { id } });
+        return { message: 'Product deleted successfully' };
     }
 }

@@ -1,52 +1,61 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { User } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto) {
-    const user = await this.prismaService.user.create({
-      data: {
-        ...createUserDto,
-      },
-    });
-    return user;
-  }
-
+  // get all users
   async findAll() {
-    const users = await this.prismaService.user.findMany();
-    return users;
+    return this.prismaService.user.findMany();
   }
 
-  async findOne(id: number) {
-    const user = await this.prismaService.user.findUnique({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
+  async validateUser(username: string, password: string): Promise<User> {
+    const user = await this.prismaService.user.findUnique({ where: { email: username } });
+
+    if (!user || user.password !== password) { // In a real application, make sure to hash the password and compare the hashed values
+      throw new UnauthorizedException('Invalid credentials');
     }
+
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.prismaService.user.findUnique({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
+
+  async register(email: string, password: string): Promise<Omit<User, 'password'>> {
+    if (!email || !password) {
+      throw new BadRequestException('email and password are required');
     }
-    await this.prismaService.user.update({
-      where: { id },
-      data: updateUserDto,
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const user = await this.prismaService.user.create({
+      email: email,
+      password: hashedPassword,
     });
-    return user;
+
+
+    const { password: _, ...result } = user;
+    return result;
   }
 
-  async remove(id: number) {
-    const user = await this.prismaService.user.findUnique({ where: { id } });
+  create(username: string, password: string): Promise<User> {
+    const user = new User();
+    user.username = username;
+    user.password = password;
+
+    return this.usersRepository.save(user);
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { username } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    await this.prismaService.user.delete({ where: { id } });
-    return { message: 'User deleted successfully' };
+    return user;
   }
 }

@@ -30,7 +30,7 @@ export class OrderItemService {
     return orderItems;
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const orderItem = await this.prismaService.orderItem.findUnique({ where: { id } });
     if (!orderItem) {
       throw new NotFoundException('Order item not found');
@@ -38,7 +38,7 @@ export class OrderItemService {
     return orderItem;
   }
 
-  async update(id: number, updateOrderItemDto: UpdateOrderItemDto) {
+  async update(id: string, updateOrderItemDto: UpdateOrderItemDto) {
     const orderItem = await this.prismaService.orderItem.findUnique({ where: { id } });
     if (!orderItem) {
       throw new NotFoundException('Order item not found');
@@ -50,7 +50,7 @@ export class OrderItemService {
     return updatedOrderItem;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const orderItem = await this.prismaService.orderItem.findUnique({ where: { id } });
     if (!orderItem) {
       throw new NotFoundException('Order item not found');

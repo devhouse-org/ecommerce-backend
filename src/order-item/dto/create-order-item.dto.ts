@@ -4,11 +4,11 @@ export class CreateOrderItemDto {
 
     @IsNumber()
     @IsNotEmpty()
-    productId : number
+    productId : string
     
     @IsNumber()
     @IsNotEmpty()
-    orderId : number
+    orderId : string
         
     @IsNumber()
     @IsNotEmpty()

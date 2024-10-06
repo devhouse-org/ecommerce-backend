@@ -22,7 +22,7 @@ export class CategoryService {
     return categories;
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const category = await this.prismaService.category.findUnique({
       where: {
         id: id,
@@ -34,7 +34,7 @@ export class CategoryService {
     return category;
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
     const category = await this.prismaService.category.findUnique({ where: { id } });
     if (!category) {
       throw new NotFoundException('Category not found');
@@ -46,7 +46,7 @@ export class CategoryService {
     return { message: 'Category updated successfully' };
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const category = await this.prismaService.category.findUnique({ where: { id } });
     if (!category) {
       throw new NotFoundException('Category not found');

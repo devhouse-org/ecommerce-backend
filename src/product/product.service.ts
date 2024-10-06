@@ -23,7 +23,7 @@ export class ProductService {
     }
 
 
-    async findOne(id: number) {
+    async findOne(id: string) {
         const product = await this.prismaService.product.findUnique({ where: { id } });
         if (!product) {
             throw new NotFoundException('Product not found');
@@ -32,7 +32,7 @@ export class ProductService {
     }
 
 
-    async update(id: number, updateProductDto: UpdateProductDto) {
+    async update(id: string, updateProductDto: UpdateProductDto) {
         const product = await this.prismaService.product.findUnique({ where: { id } });
         if (!product) {
             throw new NotFoundException('Product not found');
@@ -45,7 +45,7 @@ export class ProductService {
     }
 
 
-    async remove(id: number) {
+    async remove(id: string) {
         const product = await this.prismaService.product.findUnique({ where: { id } });
         if (!product) {
             throw new NotFoundException('Product not found');

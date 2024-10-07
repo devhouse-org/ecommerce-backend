@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(uuid())
+  id        String   @id @default(uuid())
   email     String   @unique
   password  String
   name      String?
   orders    Order[]
+  ratings   Rating[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -30,13 +31,26 @@ model Product {
   price       Float
   imageUrl    String?
   category    Category[]
+  ratings     Rating[]
   orderItems  OrderItem[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
 
+model Rating {
+  id        String   @id @default(uuid())
+  score    Int
+  comment String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Category {
-  id          String      @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String    @unique
   products  Product[]
   createdAt DateTime  @default(now())
@@ -55,7 +69,7 @@ model Order {
 }
 
 model OrderItem {
-  id        String      @id @default(uuid())
+  id        String   @id @default(uuid())
   orderId   String
   order     Order    @relation(fields: [orderId], references: [id])
   productId String
@@ -72,28 +86,3 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

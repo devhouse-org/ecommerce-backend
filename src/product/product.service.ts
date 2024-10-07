@@ -18,8 +18,16 @@ export class ProductService {
     }
 
 
-    async findAll() {
-        const products = await this.prismaService.product.findMany()
+    async findAll(categoryId:string) {
+        const products = await this.prismaService.category.findUnique({
+            where: {
+                id: categoryId,
+            },
+            include: {
+                products: true,
+            }
+        })
+        return products
     }
 
 

@@ -12,16 +12,12 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
-<<<<<<< HEAD
-  @Get('category/:categoryId')
-=======
   @Get()
   getAll() {
     return this.productService.getAll();
   }
 
-  @Get('category/ :categoryId')
->>>>>>> e4ac693e5aa38609d0de317bba05a545deb69a7e
+  @Get('category/:categoryId')
   findAll(@Param('categoryId') categoryId: string) {
     return this.productService.findAll(categoryId);
   }

@@ -12,7 +12,7 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
-  @Get('category/ :categoryId')
+  @Get('category/:categoryId')
   findAll(@Param('categoryId') categoryId: string) {
     return this.productService.findAll(categoryId);
   }

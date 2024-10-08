@@ -6,19 +6,22 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class ProductService {
 
-    constructor(private readonly prismaService : PrismaService){}
+    constructor(private readonly prismaService: PrismaService) { }
 
     async create(createProductDto: CreateProductDto) {
         const product = await this.prismaService.product.create({
-            data : {
+            data: {
                 ...createProductDto,
             }
         })
-        return product 
+        return product
     }
 
+    async getAll() {
+        return this.prismaService.product.findMany();
+    }
 
-    async findAll(categoryId:string) {
+    async findAll(categoryId: string) {
         const products = await this.prismaService.category.findUnique({
             where: {
                 id: categoryId,

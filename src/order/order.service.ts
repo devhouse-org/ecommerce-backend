@@ -8,8 +8,12 @@ export class OrderService {
 
   constructor(private readonly prismaService: PrismaService) { }
 
+
+
   async create(createOrderDto: CreateOrderDto) {
     const user = await this.prismaService.user.findUnique({ where: { id: createOrderDto.userId } });
+
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -22,7 +26,7 @@ export class OrderService {
   }
 
   async findAll() {
-    return await this.prismaService.order.findMany();
+    return await this.prismaService.order.findMany({ include: { orderItems: { include: { product: true } } } });
   }
 
   async findOne(id: string) {

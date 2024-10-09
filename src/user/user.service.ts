@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; // Assuming you have a Prisma service set up
 import { Prisma, User } from '@prisma/client'; // Assuming you're using Prisma
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     return this.prisma.user.create({
@@ -13,7 +13,7 @@ export class UserService {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({ include: { orders: true } });
   }
 
   async getUserById(id: string): Promise<User | null> {
@@ -33,9 +33,17 @@ export class UserService {
     });
   }
 
-  async deleteUser(id: string): Promise<User> {
-    return this.prisma.user.delete({
-      where: { id },
-    });
+  async deleteUser(id: string) {
+    const userOrders = await this.prisma.order.findMany({ where: { userId: id } })
+
+    const hasPendingOrder = userOrders.filter(order => order.status === "PENDING")
+
+    if (hasPendingOrder.length > 0) {
+      throw new BadRequestException("Pending orders: delete the account after the orders are delivered")
+    } else {
+      return this.prisma.user.delete({
+        where: { id },
+      });
+    }
   }
 }

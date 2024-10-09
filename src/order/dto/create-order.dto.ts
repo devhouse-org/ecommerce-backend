@@ -7,7 +7,6 @@ export class CreateOrderDto {
     @IsNotEmpty({ message: 'Field userId must be added' })
     userId: string
 
-
     @IsNumber()
     @IsNotEmpty()
     total: number

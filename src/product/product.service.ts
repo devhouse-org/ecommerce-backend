@@ -9,16 +9,42 @@ export class ProductService {
     constructor(private readonly prismaService: PrismaService) { }
 
     async create(createProductDto: CreateProductDto) {
+        const { categoryIds, ...productData } = createProductDto;
+
+        const categories = await this.prismaService.category.findMany({
+            where: {
+                id: {
+                    in: categoryIds,
+                },
+            },
+        });
+
+        if (categories.length !== categoryIds.length) {
+            throw new NotFoundException('One or more categories not found');
+        }
+
         const product = await this.prismaService.product.create({
             data: {
-                ...createProductDto,
-            }
-        })
-        return product
+                ...productData,
+                category: {
+                    connect: categoryIds.map(id => ({ id })),
+                },
+            },
+            include: {
+                category: true,
+            },
+        });
+
+        return product;
     }
 
+
     async getAll() {
-        return this.prismaService.product.findMany();
+        return this.prismaService.product.findMany({
+            include: {
+                category: true,
+            },
+        });
     }
 
     async findAll(categoryId: string) {
@@ -35,7 +61,12 @@ export class ProductService {
 
 
     async findOne(id: string) {
-        const product = await this.prismaService.product.findUnique({ where: { id } });
+        const product = await this.prismaService.product.findUnique({
+            where: { id },
+            include: {
+                category: true
+            }
+        });
         if (!product) {
             throw new NotFoundException('Product not found');
         }
@@ -44,14 +75,40 @@ export class ProductService {
 
 
     async update(id: string, updateProductDto: UpdateProductDto) {
+        const { categoryIds, ...productData } = updateProductDto;
+
+        // Check if the product exists
         const product = await this.prismaService.product.findUnique({ where: { id } });
         if (!product) {
             throw new NotFoundException('Product not found');
         }
+
+        // If categoryIds are provided, validate them
+        if (categoryIds && categoryIds.length > 0) {
+            const categories = await this.prismaService.category.findMany({
+                where: {
+                    id: {
+                        in: categoryIds,
+                    },
+                },
+            });
+
+            if (categories.length !== categoryIds.length) {
+                throw new NotFoundException('One or more categories not found');
+            }
+        }
+
+        // Update product along with categories
         await this.prismaService.product.update({
             where: { id },
-            data: updateProductDto
+            data: {
+                ...productData,
+                category: categoryIds ? {
+                    set: categoryIds.map(id => ({ id })), // Replace categories with new ones
+                } : undefined,
+            },
         });
+
         return { message: 'Product updated successfully' };
     }
 

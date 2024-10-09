@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
+import { ArrayMinSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
 
 export class CreateProductDto {
 
@@ -17,4 +17,10 @@ export class CreateProductDto {
     @IsString()
     @IsOptional()
     imageUrl: string
+
+    @IsArray()
+    @ArrayMinSize(1)
+    @IsString({ each: true }) // Ensures each category ID is a string
+    categoryIds: string[]
+
 }

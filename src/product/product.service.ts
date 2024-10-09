@@ -18,7 +18,11 @@ export class ProductService {
     }
 
     async getAll() {
-        return this.prismaService.product.findMany();
+        return this.prismaService.product.findMany({
+            include: {
+                category: true
+            }
+        });
     }
 
     async findAll(categoryId: string) {
@@ -48,11 +52,11 @@ export class ProductService {
         if (!product) {
             throw new NotFoundException('Product not found');
         }
-        await this.prismaService.product.update({
+        const updatedProduct = await this.prismaService.product.update({
             where: { id },
             data: updateProductDto
         });
-        return { message: 'Product updated successfully' };
+        return updatedProduct;
     }
 
 

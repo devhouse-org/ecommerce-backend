@@ -5,8 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class OrderService {
-  
-  constructor(private readonly prismaService : PrismaService){}
+
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(createOrderDto: CreateOrderDto) {
     const user = await this.prismaService.user.findUnique({ where: { id: createOrderDto.userId } });
@@ -45,10 +45,10 @@ export class OrderService {
       },
       data: updateOrderDto,
     });
-    return order;
+    return updatedOrder;
   }
-  
- 
+
+
   async remove(id: string) {
     const order = await this.prismaService.order.findUnique({ where: { id } });
     if (!order) {

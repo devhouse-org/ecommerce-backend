@@ -1,20 +1,20 @@
-import { IsNotEmpty, IsNumber } from "class-validator"
+import { IsNotEmpty, IsNumber, IsUUID } from "class-validator"
 
 export class CreateOrderItemDto {
 
-    @IsNumber()
+    @IsUUID()
     @IsNotEmpty()
-    productId : string
-    
-    @IsNumber()
+    productId: string
+
+    @IsUUID()
     @IsNotEmpty()
-    orderId : string
-        
-    @IsNumber()
-    @IsNotEmpty()
-    quantity : number
+    orderId: string
 
     @IsNumber()
     @IsNotEmpty()
-    price : number
+    quantity: number
+
+    @IsNumber()
+    @IsNotEmpty()
+    price: number
 }

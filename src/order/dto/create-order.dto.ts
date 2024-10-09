@@ -1,18 +1,18 @@
 import { OrderItem, OrderStatus } from "@prisma/client"
-import { IsArray, IsEnum, IsNotEmpty, IsNumber } from "class-validator"
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsUUID } from "class-validator"
 
 export class CreateOrderDto {
 
-    @IsNumber()
+    @IsUUID()
     @IsNotEmpty({ message: 'Field userId must be added' })
-    userId : string
+    userId: string
 
 
     @IsNumber()
     @IsNotEmpty()
-    total : number
+    total: number
 
     @IsEnum(OrderStatus)
     @IsNotEmpty()
-    status : OrderStatus
+    status: OrderStatus
 }

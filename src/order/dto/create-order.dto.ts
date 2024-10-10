@@ -1,5 +1,5 @@
 import { OrderItem, OrderStatus } from "@prisma/client"
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsUUID } from "class-validator"
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator"
 
 export class CreateOrderDto {
 
@@ -11,7 +11,34 @@ export class CreateOrderDto {
     @IsNotEmpty()
     total: number
 
+    @IsNotEmpty()
+    products: Product[]
+
     @IsEnum(OrderStatus)
     @IsNotEmpty()
     status: OrderStatus
+
+
+    @IsString()
+    @IsNotEmpty()
+    phoneNumber: string
+
+    @IsOptional()
+    @IsString()
+    name: string
+
+    @IsString()
+    @IsEmail()
+    @IsOptional()
+    email: string
+
+    @IsString()
+    @IsNotEmpty()
+    address: string
+}
+
+class Product {
+    id: string
+    quantity: number
+    price: number
 }

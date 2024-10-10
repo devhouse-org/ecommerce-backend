@@ -17,12 +17,44 @@ export class OrderService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const order = await this.prismaService.order.create({
+
+    const formated = createOrderDto.products.map((product) => {
+      return {
+        productId: product.id,
+        quantity: product.quantity,
+        price: product.price,
+      }
+    })
+
+    const result = await this.prismaService.order.create({
       data: {
-        ...createOrderDto,
+        // ...createOrderDto,
+        userId: createOrderDto.userId,
+        total: createOrderDto.total,
+        status: createOrderDto.status,
+
+        phoneNumber: createOrderDto.phoneNumber,
+        email: createOrderDto.email,
+        address: createOrderDto.address,
+        name: createOrderDto.name,
+
+        orderItems: {
+          createMany: {
+            data: formated,
+          },
+        },
       },
-    });
-    return order;
+      include: {
+        orderItems: true,
+      },
+    })
+
+    // const order = await this.prismaService.order.create({
+    //   data: {
+    //     ...createOrderDto,
+    //   },
+    // });
+    return result;
   }
 
   async findAll() {

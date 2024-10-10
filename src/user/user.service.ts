@@ -19,6 +19,7 @@ export class UserService {
   async getUserById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { id },
+      include: { orders: true }
     });
   }
   async findOne(username: string): Promise<User | undefined> {

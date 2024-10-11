@@ -30,8 +30,8 @@ WORKDIR /app
 # Copy package.json and package-lock.json to install only production dependencies
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm install --production
+# Clean npm cache and install only production dependencies
+RUN npm cache clean --force && npm install --production
 
 # Copy the build output and Prisma files from the builder stage
 COPY --from=builder /app/dist ./dist

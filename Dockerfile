@@ -31,7 +31,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Clean npm cache and install only production dependencies
-RUN npm cache clean --force && npm install --production
+RUN npm install --production
 
 # Copy the build output and Prisma files from the builder stage
 COPY --from=builder /app/dist ./dist

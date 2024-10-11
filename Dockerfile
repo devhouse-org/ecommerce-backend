@@ -1,46 +1,26 @@
-# Stage 1: Build the application
-FROM node:20-alpine AS builder
+# Step 1: Use an official Node runtime as a parent image
+FROM node:20
 
-# Set the working directory
-WORKDIR /app
+# Step 2: Set the working directory in the container
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json to install dependencies
+# Step 3: Copy package.json and package-lock.json files to the working directory
 COPY package*.json ./
 
-# Install all dependencies
+# Step 4: Install dependencies
 RUN npm install
 
-# Copy the rest of your application code
+# Step 5: Copy the rest of the application code to the working directory
 COPY . .
 
-# Generate Prisma Client
+# Step 7: Generate Prisma client
 RUN npx prisma generate
 
-RUN npx prisma db push
-
-# Build the NestJS application
+# Step 9: Build the NestJS application
 RUN npm run build
 
-# Stage 2: Create the production image
-FROM node:20-alpine
-
-# Set the working directory
-WORKDIR /app
-
-# Copy package.json and package-lock.json to install only production dependencies
-COPY package*.json ./
-
-# Clean npm cache and install only production dependencies
-RUN npm install --production
-
-# Copy the build output and Prisma files from the builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
-# Expose the application port
+# Step 10: Expose the port the app runs on
 EXPOSE 3000
 
-# Start the NestJS application
-CMD ["node", "dist/main.js"]
+# Step 11: Define the command to run the app
+CMD ["npm", "run", "start:prod"]

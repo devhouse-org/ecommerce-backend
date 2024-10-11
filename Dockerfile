@@ -15,6 +15,7 @@ COPY . .
 
 # Step 7: Generate Prisma client
 RUN npx prisma generate
+RUN npx prisma db push
 
 # Step 9: Build the NestJS application
 RUN npm run build

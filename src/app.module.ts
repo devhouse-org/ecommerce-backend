@@ -7,11 +7,16 @@ import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { OrderModule } from './order/order.module';
 import { UserModule } from './user/user.module';
+import {ServeStaticModule} from '@nestjs/serve-static'
 import { OrderItemModule } from './order-item/order-item.module';
 import { AuthModule } from './auth/auth.module';
+import { join } from 'path';
 
 @Module({
-  imports: [PrismaModule, ProductModule, CategoryModule, OrderModule, UserModule, OrderItemModule, AuthModule],
+  imports: [PrismaModule, ProductModule, CategoryModule, OrderModule, UserModule, OrderItemModule, AuthModule,ServeStaticModule.forRoot({
+    serveRoot: '/public',
+    rootPath: join(__dirname, '..', 'public'),
+  }),],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

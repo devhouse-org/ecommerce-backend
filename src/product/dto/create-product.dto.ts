@@ -16,7 +16,7 @@ export class CreateProductDto {
 
     @IsString()
     @IsOptional()
-    imageUrl: string
+    image: string
 
     @IsArray()
     @ArrayMinSize(1)

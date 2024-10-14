@@ -1,14 +1,14 @@
 import { OrderItem, OrderStatus } from "@prisma/client";
-import { 
-    IsArray, 
-    IsEmail, 
-    IsEnum, 
-    IsNotEmpty, 
-    IsNumber, 
-    IsOptional, 
-    IsString, 
-    IsUUID, 
-    ValidateNested 
+import {
+    IsArray,
+    IsEmail,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    IsUUID,
+    ValidateNested
 } from "class-validator";
 import { Type } from "class-transformer";
 
@@ -24,9 +24,9 @@ export class CreateOrderDto {
 
     @IsArray()
     @ValidateNested({ each: true }) // Validate each product in the array
-    @Type(() => Product) // Transform plain objects into Product instances
+    @Type(() => Cart) // Transform plain objects into Product instances
     @IsNotEmpty({ message: 'Products field cannot be empty' })
-    products: Product[];
+    Cart: Cart[];
 
     @IsEnum(OrderStatus)
     @IsNotEmpty()
@@ -50,7 +50,7 @@ export class CreateOrderDto {
     address: string;
 }
 
-export class Product {
+export class Cart {
     @IsUUID() // Validate that id is a UUID
     @IsNotEmpty({ message: 'Field id must be added' })
     id: string;

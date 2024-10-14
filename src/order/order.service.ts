@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async create(createOrderDto: CreateOrderDto) {
     const user = await this.prismaService.user.findUnique({
@@ -16,10 +16,10 @@ export class OrderService {
       throw new NotFoundException('User not found');
     }
 
-    const formattedProducts = createOrderDto.products.map((product) => ({
-      productId: product.id,
-      quantity: product.quantity,
-      price: product.price,
+    const formattedCart = createOrderDto.Cart.map((Cart) => ({
+      productId: Cart.id,
+      quantity: Cart.quantity,
+      price: Cart.price,
     }));
 
     return await this.prismaService.$transaction(async (prisma) => {
@@ -34,7 +34,7 @@ export class OrderService {
           name: createOrderDto.name,
           orderItems: {
             createMany: {
-              data: formattedProducts,
+              data: formattedCart,
             },
           },
         },

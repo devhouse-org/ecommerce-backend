@@ -5,60 +5,51 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class OrderService {
-
-  constructor(private readonly prismaService: PrismaService) { }
-
-
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createOrderDto: CreateOrderDto) {
-    const user = await this.prismaService.user.findUnique({ where: { id: createOrderDto.userId } });
-
+    const user = await this.prismaService.user.findUnique({
+      where: { id: createOrderDto.userId },
+    });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const formated = createOrderDto.products.map((product) => {
-      return {
-        productId: product.id,
-        quantity: product.quantity,
-        price: product.price,
-      }
-    })
+    const formattedProducts = createOrderDto.products.map((product) => ({
+      productId: product.id,
+      quantity: product.quantity,
+      price: product.price,
+    }));
 
-    const result = await this.prismaService.order.create({
-      data: {
-        // ...createOrderDto,
-        userId: createOrderDto.userId,
-        total: createOrderDto.total,
-        status: createOrderDto.status,
-
-        phoneNumber: createOrderDto.phoneNumber,
-        email: createOrderDto.email,
-        address: createOrderDto.address,
-        name: createOrderDto.name,
-
-        orderItems: {
-          createMany: {
-            data: formated,
+    return await this.prismaService.$transaction(async (prisma) => {
+      const order = await prisma.order.create({
+        data: {
+          userId: createOrderDto.userId,
+          total: createOrderDto.total,
+          status: createOrderDto.status,
+          phoneNumber: createOrderDto.phoneNumber,
+          email: createOrderDto.email,
+          address: createOrderDto.address,
+          name: createOrderDto.name,
+          orderItems: {
+            createMany: {
+              data: formattedProducts,
+            },
           },
         },
-      },
-      include: {
-        orderItems: true,
-      },
-    })
-
-    // const order = await this.prismaService.order.create({
-    //   data: {
-    //     ...createOrderDto,
-    //   },
-    // });
-    return result;
+        include: {
+          orderItems: true,
+        },
+      });
+      return order;
+    });
   }
 
   async findAll() {
-    return await this.prismaService.order.findMany({ include: { orderItems: { include: { product: true } } } });
+    return await this.prismaService.order.findMany({
+      include: { orderItems: { include: { product: true } } },
+    });
   }
 
   async findOne(id: string) {
@@ -69,31 +60,30 @@ export class OrderService {
     return order;
   }
 
-
   async update(id: string, updateOrderDto: UpdateOrderDto) {
     const order = await this.prismaService.order.findUnique({ where: { id } });
     if (!order) {
       throw new NotFoundException('Order not found');
     }
+
     const updatedOrder = await this.prismaService.order.update({
-      where: {
-        id: id,
+      where: { id },
+      data: {
+        ...order, // Preserving existing properties
+        ...updateOrderDto,
       },
-      data: updateOrderDto,
     });
     return updatedOrder;
   }
-
 
   async remove(id: string) {
     const order = await this.prismaService.order.findUnique({ where: { id } });
     if (!order) {
       throw new NotFoundException('Order not found');
     }
+
     await this.prismaService.order.delete({
-      where: {
-        id: id,
-      },
+      where: { id },
     });
     return order;
   }

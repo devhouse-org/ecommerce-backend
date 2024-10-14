@@ -1,44 +1,65 @@
-import { OrderItem, OrderStatus } from "@prisma/client"
-import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator"
+import { OrderItem, OrderStatus } from "@prisma/client";
+import { 
+    IsArray, 
+    IsEmail, 
+    IsEnum, 
+    IsNotEmpty, 
+    IsNumber, 
+    IsOptional, 
+    IsString, 
+    IsUUID, 
+    ValidateNested 
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateOrderDto {
 
     @IsUUID()
     @IsNotEmpty({ message: 'Field userId must be added' })
-    userId: string
+    userId: string;
 
     @IsNumber()
     @IsNotEmpty()
-    total: number
+    total: number;
 
-    @IsNotEmpty()
-    products: Product[]
+    @IsArray()
+    @ValidateNested({ each: true }) // Validate each product in the array
+    @Type(() => Product) // Transform plain objects into Product instances
+    @IsNotEmpty({ message: 'Products field cannot be empty' })
+    products: Product[];
 
     @IsEnum(OrderStatus)
     @IsNotEmpty()
-    status: OrderStatus
-
+    status: OrderStatus;
 
     @IsString()
     @IsNotEmpty()
-    phoneNumber: string
+    phoneNumber: string;
 
     @IsOptional()
     @IsString()
-    name: string
+    name?: string;
 
     @IsString()
     @IsEmail()
     @IsOptional()
-    email: string
+    email?: string;
 
     @IsString()
     @IsNotEmpty()
-    address: string
+    address: string;
 }
 
-class Product {
-    id: string
-    quantity: number
-    price: number
+export class Product {
+    @IsUUID() // Validate that id is a UUID
+    @IsNotEmpty({ message: 'Field id must be added' })
+    id: string;
+
+    @IsNumber()
+    @IsNotEmpty({ message: 'Field quantity must be added' })
+    quantity: number;
+
+    @IsNumber()
+    @IsNotEmpty({ message: 'Field price must be added' })
+    price: number;
 }

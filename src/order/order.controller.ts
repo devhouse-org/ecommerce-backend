@@ -1,11 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('order')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) { }
+  constructor(private readonly orderService: OrderService) {}
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
@@ -18,17 +27,28 @@ export class OrderController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const order = await this.orderService.findOne(id);
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+    return order;
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(id, updateOrderDto);
+  async update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+    const updatedOrder = await this.orderService.update(id, updateOrderDto);
+    if (!updatedOrder) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+    return updatedOrder;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(id);
+  async remove(@Param('id') id: string) {
+    const result = await this.orderService.remove(id);
+    if (!result) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
   }
 }

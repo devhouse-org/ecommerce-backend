@@ -135,9 +135,22 @@ export class StaticsService {
 
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    return monthlyRevenue.map(item => ({
-      name: monthNames[new Date(item.createdAt).getMonth()],
-      total: Number(item._sum.total.toFixed(2)),
+    const groupedRevenue = monthlyRevenue.reduce((acc, item) => {
+      const monthName = monthNames[new Date(item.createdAt).getMonth()];
+      const total = Number(item._sum.total.toFixed(2));
+
+      if (!acc[monthName]) {
+        acc[monthName] = total;
+      } else {
+        acc[monthName] += total;
+      }
+
+      return acc;
+    }, {});
+
+    return Object.entries(groupedRevenue).map(([month, total]) => ({
+      month,
+      totalRevenueInThisMonth: typeof total === 'number' ? Number(total.toFixed(2)) : 0,
     }));
   }
 }

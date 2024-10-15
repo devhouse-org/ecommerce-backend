@@ -6,6 +6,20 @@ import { PrismaService } from './prisma/prisma.service';
 export class AppController {
   constructor(private readonly appService: AppService, private readonly prisma: PrismaService) { }
 
+  // create a user endpoint for admin
+  @Get('seed/admin')
+  async createSuperUser() {
+    // create a super user with the email admin@admin.com and the password admin
+    const superUser = await this.prisma.user.create({
+      data: {
+        email: 'admin@admin.com',
+        password: 'admin',
+        name: 'Super Admin',
+        role: 'ADMIN',
+      },
+    });
+    return superUser;
+  }
   // seed end point
   @Get('seed/users')
   async seed() {

@@ -11,12 +11,13 @@ import {ServeStaticModule} from '@nestjs/serve-static'
 import { OrderItemModule } from './order-item/order-item.module';
 import { AuthModule } from './auth/auth.module';
 import { join } from 'path';
+import { StaticsModule } from './statics/statics.module';
 
 @Module({
   imports: [PrismaModule, ProductModule, CategoryModule, OrderModule, UserModule, OrderItemModule, AuthModule,ServeStaticModule.forRoot({
     serveRoot: '/public',
     rootPath: join(__dirname, '..', 'public'),
-  }),],
+  }), StaticsModule,],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

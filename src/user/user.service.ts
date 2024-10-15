@@ -1,37 +1,68 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; // Assuming you have a Prisma service set up
-import { Prisma, User } from '@prisma/client'; // Assuming you're using Prisma
+import { Prisma, User, Roles } from '@prisma/client'; // Assuming you're using Prisma
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) { }
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({
-      data,
+  async createUser(data: CreateUserDto, image?: Express.Multer.File): Promise<User> {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: data.email }
     });
+
+    if (existingUser) {
+      throw new BadRequestException('User with this email already exists');
+    }
+
+    const userData: Prisma.UserCreateInput = {
+      ...data,
+      role: data.role as Roles,
+      image: image ? image.buffer : undefined,
+    };
+
+    return this.prisma.user.create({ data: userData });
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return this.prisma.user.findMany({ include: { orders: true } });
+  async getAllUsers(): Promise<(Omit<User, 'image'> & { image: string | null })[]> {
+    const users = await this.prisma.user.findMany({ include: { orders: true } });
+    return users.map(user => ({
+      ...user,
+      image: user.image ? user.image.toString('base64') : null,
+    }));
   }
 
-  async getUserById(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
+  async getUserById(id: string): Promise<Omit<User, 'image'> & { image: string | null }> {
+    const user = await this.prisma.user.findUnique({
       where: { id },
       include: { orders: true }
     });
+    if (user) {
+      return {
+        ...user,
+        image: user.image ? user.image.toString('base64') : null,
+      };
+    }
+    return null;
   }
-  async findOne(username: string): Promise<User | undefined> {
-    return this.prisma.user.findUnique({
-      where: { email: username },
-    });
-  }
-  async updateUser(id: string, data: Prisma.UserUpdateInput): Promise<User> {
-    return this.prisma.user.update({
+
+  async updateUser(id: string, data: UpdateUserDto, image?: Express.Multer.File): Promise<Omit<User, 'image'> & { image: string | null }> {
+    const updateData: Prisma.UserUpdateInput = {
+      ...data,
+      image: image ? image.buffer : undefined,
+    };
+
+    const updatedUser = await this.prisma.user.update({
       where: { id },
-      data,
+      data: updateData,
     });
+
+    return {
+      ...updatedUser,
+      image: updatedUser.image ? updatedUser.image.toString('base64') : null,
+    };
   }
 
   async deleteUser(id: string) {
@@ -46,5 +77,11 @@ export class UserService {
         where: { id },
       });
     }
+  }
+
+  async findOne(username: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { email: username },
+    });
   }
 }

@@ -8,45 +8,51 @@ export class ProductService {
 
     constructor(private readonly prismaService: PrismaService) { }
 
-   // src/product/product.service.ts
+   
 
 async create(createProductDto: CreateProductDto) {
-    // Log received DTO
-    console.log('Received CreateProductDto:', createProductDto);
-  
-    // Check categories existence
-    const categories = await this.prismaService.category.findMany({
-      where: { id: { in: createProductDto.categoryIds } },
-    });
-  
-    if (categories.length !== createProductDto.categoryIds.length) {
-      throw new NotFoundException('One or more categories not found');
-    }
-  
-    // Create the product with the correct field name
+    const { categories, ...productData } = createProductDto;
+
     const product = await this.prismaService.product.create({
       data: {
-        name: createProductDto.name,
-        description: createProductDto.description,
-        price: createProductDto.price,
-        imageUrl: createProductDto.image, // Correct field name
+        ...productData,
         category: {
-          connect: createProductDto.categoryIds.map(id => ({ id })),
+          connectOrCreate: categories.map(categoryName => ({
+            where: { name: categoryName },
+            create: { name: categoryName },
+          })),
         },
       },
       include: {
         category: true,
       },
     });
-  
-    console.log('Created Product:', product);
+
     return product;
   }
   
 
-
+    // get all products by category id
+    async getProductsByCategoryId(categoryId: string) {
+        return this.prismaService.product.findMany({
+            where: {
+                category: {
+                    some: {
+                        id: categoryId,
+                    },
+                },
+            },
+            include: {
+                category: true,
+            },
+        });
+    }
     async getAll() {
-        return this.prismaService.product.findMany();
+        return this.prismaService.product.findMany({
+            include: {
+                category: true,
+            },
+        });
     }
 
     async findAll(categoryId: string) {
@@ -77,29 +83,53 @@ async create(createProductDto: CreateProductDto) {
 
 
     async update(id: string, updateProductDto: UpdateProductDto) {
-        const { categoryIds, ...productData } = updateProductDto;
+        const { categories, ...productData } = updateProductDto;
 
-        // Check if the product exists
-        const product = await this.prismaService.product.findUnique({ where: { id } });
-        if (!product) {
+        // Get current categories of the product
+        const currentProduct = await this.prismaService.product.findUnique({
+            where: { id },
+            include: { category: true },
+        });
+
+        if (!currentProduct) {
             throw new NotFoundException('Product not found');
         }
-        await this.prismaService.product.update({
+
+        const currentCategories = currentProduct.category.map(c => c.name);
+
+        // Categories to disconnect (present in current but not in new)
+        const categoriesToDisconnect = currentCategories.filter(
+            c => !categories.includes(c)
+        );
+
+        // Categories to connect or create (present in new but not in current)
+        const categoriesToConnectOrCreate = categories.filter(
+            c => !currentCategories.includes(c)
+        );
+
+        const updatedProduct = await this.prismaService.product.update({
             where: { id },
             data: {
                 ...productData,
-                category: categoryIds ? {
-                    set: categoryIds.map(id => ({ id })), // Replace categories with new ones
-                } : undefined,
+                category: {
+                    disconnect: categoriesToDisconnect.map(name => ({ name })),
+                    connectOrCreate: categoriesToConnectOrCreate.map(name => ({
+                        where: { name },
+                        create: { name },
+                    })),
+                },
+            },
+            include: {
+                category: true,
             },
         });
-        return { message: 'Product updated successfully' };
+
+        return updatedProduct;
     }
 
 
     async remove(id: string) {
         const product = await this.prismaService.product.findUnique({ where: { id } });
-        console.log(product)
         if (!product) {
             throw new NotFoundException('Product not found');
         }

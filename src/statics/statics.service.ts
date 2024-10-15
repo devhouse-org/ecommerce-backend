@@ -34,12 +34,14 @@ export class StaticsService {
     const deliveredOrders = await this.prisma.order.count({
       where: { status: OrderStatus.DELIVERED },
     });
-
+    // total products
+    const totalProducts = await this.prisma.product.count();
     return {
       totalOrders,
       pendingOrders,
       shippedOrders,
       deliveredOrders,
+      totalProducts,
     };
   }
 

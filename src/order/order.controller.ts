@@ -51,4 +51,13 @@ export class OrderController {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
   }
+
+  @Get('user/:userId')
+  async findByUserId(@Param('userId') userId: string) {
+    const orders = await this.orderService.findByUserId(userId);
+    if (!orders || orders.length === 0) {
+      throw new NotFoundException(`No orders found for user with ID ${userId}`);
+    }
+    return orders;
+  }
 }

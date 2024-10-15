@@ -33,7 +33,7 @@ model Product {
   name             String
   description      String?
   price            Float
-  imageUrl         String?
+  image            String?           // Changed to String to store base64
   category         Category[]
   ratings          Rating[]
   orderItems       OrderItem[]

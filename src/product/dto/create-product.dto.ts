@@ -13,15 +13,14 @@ export class CreateProductDto {
   description: string;
 
   @IsNumber()
-  @Type(() => Number) // Ensures transformation from string to number
+  @Type(() => Number)
   price: number;
 
   @IsArray()
-  @ArrayNotEmpty()
   @IsString({ each: true })
-  categoryIds: string[];
+  categories: string[];
 
   @IsOptional()
   @IsString()
-  image?: string; // Optional field to hold the image URL
+  image?: string; // Now expects a base64 string
 }

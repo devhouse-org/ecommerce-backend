@@ -25,6 +25,7 @@ async create(createProductDto: CreateProductDto) {
       },
       include: {
         category: true,
+        ratings: true,
       },
     });
 
@@ -44,6 +45,7 @@ async create(createProductDto: CreateProductDto) {
             },
             include: {
                 category: true,
+                ratings: true,
             },
         });
     }
@@ -51,6 +53,7 @@ async create(createProductDto: CreateProductDto) {
         return this.prismaService.product.findMany({
             include: {
                 category: true,
+                ratings: true,
             },
         });
     }
@@ -72,7 +75,8 @@ async create(createProductDto: CreateProductDto) {
         const product = await this.prismaService.product.findUnique({
             where: { id },
             include: {
-                category: true
+                category: true,
+                ratings: true, // Make sure this is included
             }
         });
         if (!product) {

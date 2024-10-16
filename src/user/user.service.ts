@@ -8,7 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(private prisma: PrismaService) { }
 
-  async createUser(data: CreateUserDto, image?: Express.Multer.File): Promise<User> {
+  async createUser(data: CreateUserDto): Promise<User> {
     const existingUser = await this.prisma.user.findUnique({
       where: { email: data.email }
     });
@@ -20,21 +20,18 @@ export class UserService {
     const userData: Prisma.UserCreateInput = {
       ...data,
       role: data.role as Roles,
-      image: image ? image.buffer : undefined,
+      // No need to convert image to buffer, it's already a string
     };
 
     return this.prisma.user.create({ data: userData });
   }
 
-  async getAllUsers(): Promise<(Omit<User, 'image'> & { image: string | null })[]> {
+  async getAllUsers(): Promise<User[]> {
     const users = await this.prisma.user.findMany({ include: { orders: true } });
-    return users.map(user => ({
-      ...user,
-      image: user.image ? user.image.toString('base64') : null,
-    }));
+    return users
   }
 
-  async getUserById(id: string): Promise<Omit<User, 'image'> & { image: string | null }> {
+  async getUserById(id: string): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: { orders: true }
@@ -42,16 +39,15 @@ export class UserService {
     if (user) {
       return {
         ...user,
-        image: user.image ? user.image.toString('base64') : null,
+        image: user.image,
       };
     }
     return null;
   }
 
-  async updateUser(id: string, data: UpdateUserDto, image?: Express.Multer.File): Promise<Omit<User, 'image'> & { image: string | null }> {
+  async updateUser(id: string, data: UpdateUserDto): Promise<User> {
     const updateData: Prisma.UserUpdateInput = {
       ...data,
-      image: image ? image.buffer : undefined,
     };
 
     const updatedUser = await this.prisma.user.update({
@@ -61,7 +57,7 @@ export class UserService {
 
     return {
       ...updatedUser,
-      image: updatedUser.image ? updatedUser.image.toString('base64') : null,
+      image: updatedUser.image,
     };
   }
 

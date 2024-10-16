@@ -25,7 +25,11 @@ export class OrderController {
   findAll() {
     return this.orderService.findAll();
   }
-
+  @Get('user/:userId')
+  async findByUserId(@Param('userId') userId: string) {
+    const orders = await this.orderService.findByUserId(userId);
+    return orders;
+  }
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const order = await this.orderService.findOne(id);
@@ -52,12 +56,5 @@ export class OrderController {
     }
   }
 
-  @Get('user/:userId')
-  async findByUserId(@Param('userId') userId: string) {
-    const orders = await this.orderService.findByUserId(userId);
-    if (!orders || orders.length === 0) {
-      throw new NotFoundException(`No orders found for user with ID ${userId}`);
-    }
-    return orders;
-  }
+  
 }

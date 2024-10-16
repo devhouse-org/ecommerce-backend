@@ -16,7 +16,7 @@ datasource db {
 model User {
   id               String            @id @default(uuid())
   email            String            @unique
-  image            Bytes?
+  image            String?           // Changed from Bytes? to String?
   role             Roles             @default(USER)
   password         String
   name             String?

@@ -17,8 +17,12 @@ export class CreateUserDto {
   @IsEnum(Roles)
   @IsNotEmpty()
   role: Roles;
-  // phone
+
   @IsString()
   @IsOptional()
   phone?: string;
+
+  @IsString()
+  @IsOptional()
+  image?: string; // Added image field as optional string
 }

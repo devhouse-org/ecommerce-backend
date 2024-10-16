@@ -48,6 +48,7 @@ export class OrderService {
 
   async findAll() {
     return await this.prismaService.order.findMany({
+      orderBy: { createdAt: 'desc' },
       include: { orderItems: { include: { product: true } } },
     });
   }

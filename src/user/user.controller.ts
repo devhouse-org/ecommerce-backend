@@ -3,39 +3,34 @@ import { UserService } from './user.service';
 import { User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
   async createUser(
     @Body() userData: CreateUserDto,
-    @UploadedFile() image: Express.Multer.File
   ): Promise<User> {
-    return this.userService.createUser(userData, image);
+    return this.userService.createUser(userData);
   }
 
   @Get()
-  async getAllUsers(): Promise<(Omit<User, 'image'> & { image: string })[]> {
+  async getAllUsers(): Promise<User[]> {
     return this.userService.getAllUsers();
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: string): Promise<Omit<User, 'image'> & { image: string }> {
+  async getUserById(@Param('id') id: string): Promise<User> {
     return this.userService.getUserById(id);
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('image'))
   async updateUser(
     @Param('id') id: string,
     @Body() userData: UpdateUserDto,
-    @UploadedFile() image: Express.Multer.File
-  ): Promise<Omit<User, 'image'> & { image: string }> {
-    return this.userService.updateUser(id, userData, image);
+  ): Promise<User> {
+    return this.userService.updateUser(id, userData);
   }
 
   @Delete(':id')

@@ -37,11 +37,11 @@ export class StaticsService {
     // total products
     const totalProducts = await this.prisma.product.count();
     return {
-      totalOrders,
-      pendingOrders,
-      shippedOrders,
-      deliveredOrders,
-      totalProducts,
+      totalOrders:totalOrders.toLocaleString() ,
+      pendingOrders:pendingOrders.toLocaleString() ,
+      shippedOrders:shippedOrders.toLocaleString() ,
+      deliveredOrders:deliveredOrders.toLocaleString() ,
+      totalProducts:totalProducts.toLocaleString() ,
     };
   }
 
@@ -58,7 +58,9 @@ export class StaticsService {
     });
 
     return {
-      totalRevenue: result._sum.total || 0,
+      totalRevenue: result._sum.total.toLocaleString('en-US',{
+        minimumFractionDigits: 2
+      }) || 0,
     };
   }
 
@@ -108,7 +110,7 @@ export class StaticsService {
     return recentSales.map(sale => ({
       id: sale.user.id,
       name: sale.user.name,
-      image: sale.user.image ? `data:image/jpeg;base64,${sale.user.image.toString('base64')}` : null,
+      image: sale.user.image,
       email: sale.user.email,
       salesAmount: sale.total.toFixed(2),
     }));

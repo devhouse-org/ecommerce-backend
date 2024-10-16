@@ -16,7 +16,7 @@ datasource db {
 model User {
   id               String            @id @default(uuid())
   email            String            @unique
-  image            String?           // Changed from Bytes? to String?
+  image            String? // Changed from Bytes? to String?
   role             Roles             @default(USER)
   password         String
   name             String?
@@ -33,13 +33,32 @@ model Product {
   name             String
   description      String?
   price            Float
-  image            String?           // Changed to String to store base64
+  image            String? // Changed to String to store base64
   category         Category[]
   ratings          Rating[]
   orderItems       OrderItem[]
   favoriteProducts FavoriteProduct[]
+  variants         Variant[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
+}
+
+model Variant {
+  id        String  @id @default(uuid())
+  name      String
+  image     String?
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  values    Value[]
+}
+
+model Value {
+  id        String  @id @default(uuid())
+  name      String
+  image     String?
+  price     String?
+  variantId String
+  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 }
 
 model Rating {

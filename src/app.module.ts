@@ -14,12 +14,13 @@ import { join } from 'path';
 import { StaticsModule } from './statics/statics.module';
 import { RateModule } from './rate/rate.module';
 import { VariantModule } from './variant/variant.module';
+import { AuctionModule } from './auction/auction.module';
 
 @Module({
   imports: [PrismaModule, ProductModule, CategoryModule, OrderModule, UserModule, OrderItemModule, AuthModule,ServeStaticModule.forRoot({
     serveRoot: '/public',
     rootPath: join(__dirname, '..', 'public'),
-  }), StaticsModule, RateModule, VariantModule,],
+  }), StaticsModule, RateModule, VariantModule, AuctionModule,],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

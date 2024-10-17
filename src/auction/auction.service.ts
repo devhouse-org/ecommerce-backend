@@ -63,6 +63,15 @@ export class AuctionService {
               price: 'desc',
             },
             take: 1,
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
           },
         },
       });

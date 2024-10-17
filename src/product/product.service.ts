@@ -8,30 +8,30 @@ export class ProductService {
 
     constructor(private readonly prismaService: PrismaService) { }
 
-   
 
-async create(createProductDto: CreateProductDto) {
-    const { categories, ...productData } = createProductDto;
 
-    const product = await this.prismaService.product.create({
-      data: {
-        ...productData,
-        category: {
-          connectOrCreate: categories.map(categoryName => ({
-            where: { name: categoryName },
-            create: { name: categoryName },
-          })),
-        },
-      },
-      include: {
-        category: true,
-        ratings: true,
-      },
-    });
+    async create(createProductDto: CreateProductDto) {
+        const { categories, ...productData } = createProductDto;
 
-    return product;
-  }
-  
+        const product = await this.prismaService.product.create({
+            data: {
+                ...productData,
+                category: {
+                    connectOrCreate: categories.map(categoryName => ({
+                        where: { name: categoryName },
+                        create: { name: categoryName },
+                    })),
+                },
+            },
+            include: {
+                category: true,
+                ratings: true,
+            },
+        });
+
+        return product;
+    }
+
 
     // get all products by category id
     async getProductsByCategoryId(categoryId: string) {
@@ -46,6 +46,7 @@ async create(createProductDto: CreateProductDto) {
             include: {
                 category: true,
                 ratings: true,
+                variants: true,
             },
         });
     }

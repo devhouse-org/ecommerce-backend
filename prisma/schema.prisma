@@ -47,6 +47,8 @@ model Product {
   description      String?
   price            Float
   image            String? //  base64 string
+  stock            Int             @default(0)
+  published        Boolean         @default(false)
   category         Category[]
   ratings          Rating[]
   orderItems       OrderItem[]

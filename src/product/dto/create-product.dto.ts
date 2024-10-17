@@ -1,6 +1,6 @@
 // src/product/dto/create-product.dto.ts
 
-import { IsString, IsNotEmpty, IsNumber, IsArray, ArrayNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsArray, IsOptional, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateProductDto {
@@ -23,4 +23,8 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   image?: string; // Now expects a base64 string
+  
+  @IsOptional()
+  @IsBoolean()
+  published: boolean;
 }

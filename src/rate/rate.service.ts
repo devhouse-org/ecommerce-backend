@@ -44,20 +44,34 @@ export class RateService {
     return newRating;
   }
 
+  async findAllByProductId(productId: string) {
+    return await this.prisma.rating.aggregate({
+      _avg: { score: true },
+      where: { productId },
+    });
+  }
+
   async findAll() {
-    // Implement this method to return all ratings
+    return await this.prisma.rating.findMany();
   }
 
   async findOne(id: string) {
-    // Implement this method to find a single rating by id
+    return await this.prisma.rating.findUnique({
+      where: { id },
+    });
   }
 
   async update(id: string, updateRateDto: UpdateRateDto, userId: string) {
-    // Implement this method to update a rating, ensuring the user owns the rating
+    return await this.prisma.rating.update({
+      where: { id },
+      data: updateRateDto,
+    });
   }
 
   async remove(id: string, userId: string) {
-    // Implement this method to remove a rating, ensuring the user owns the rating
+    return await this.prisma.rating.delete({
+      where: { id },
+    });
   }
 
   async hasUserRatedProduct(userId: string, productId: string): Promise<boolean> {

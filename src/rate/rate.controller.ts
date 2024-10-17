@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Req, UseGuards, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Req, UseGuards, Put, Query } from '@nestjs/common';
 import { RateService } from './rate.service';
 import { CreateRateDto } from './dto/create-rate.dto';
 import { UpdateRateDto } from './dto/update-rate.dto';
@@ -19,6 +19,11 @@ export class RateController {
   @Get()
   findAll() {
     return this.rateService.findAll();
+  }
+
+  @Get()
+  findAllByProductId(@Query('productId') productId: string) {
+    return this.rateService.findAllByProductId(productId);
   }
 
   @Get(':id')

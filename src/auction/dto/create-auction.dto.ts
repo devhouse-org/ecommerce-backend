@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
-import { Type } from "class-transformer";
+import { IsNotEmpty, IsNumber, IsString, Min } from "class-validator";
 
 export class CreateAuctionDto {
     @IsString()
@@ -17,4 +16,8 @@ export class CreateAuctionDto {
     @IsString()
     @IsNotEmpty()
     endTime: string;
+
+    @IsNumber()
+    @Min(0)
+    minPointsToSubscribe: number;
 }

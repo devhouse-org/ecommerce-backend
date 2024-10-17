@@ -42,7 +42,21 @@ export class OrderService {
           orderItems: true,
         },
       });
-      return order;
+
+      // Calculate points to add (you can adjust this logic as needed)
+      const pointsToAdd = Math.floor(createOrderDto.total / 10); // Add 1 point for every $10 spent
+
+      // Update user's points
+      await prisma.user.update({
+        where: { id: createOrderDto.userId },
+        data: {
+          points: {
+            increment: pointsToAdd,
+          },
+        },
+      });
+
+      return { ...order, pointsAdded: pointsToAdd };
     });
   }
 

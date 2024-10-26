@@ -44,7 +44,6 @@ export class StaticsService {
       totalProducts:totalProducts.toLocaleString() || 0,
     };
   }
-
   async getRevenueStats() {
     const result = await this.prisma.order.aggregate({
       _sum: {
@@ -57,10 +56,9 @@ export class StaticsService {
       },
     });
 
+    const totalRevenue = result?._sum?.total;
     return {
-      totalRevenue: result._sum.total.toLocaleString('en-US',{
-        minimumFractionDigits: 2
-      }) || 0,
+      totalRevenue: totalRevenue ? totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0',
     };
   }
 

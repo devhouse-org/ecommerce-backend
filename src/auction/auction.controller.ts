@@ -11,7 +11,7 @@ export class AuctionController {
 
   @Post()
   create(@Body() createAuctionDto: CreateAuctionDto) {
-    return this.auctionService.create(createAuctionDto);
+    return this.auctionService.createAuction(createAuctionDto);
   }
 
   @Get()
@@ -19,10 +19,16 @@ export class AuctionController {
     return this.auctionService.findAll();
   }
 
+  @Get(':id/can-subscribe/:userId')
+  canUserSubscribe(@Param('id') id: string, @Param('userId') userId: string) {
+    return this.auctionService.canUserSubscribe(userId, id);
+  }
+
   @Post(':id/subscribe')
   subscribe(@Param('id') id: string, @Body() subscribeAuctionDto: SubscribeAuctionDto) {
     return this.auctionService.subscribe(id, subscribeAuctionDto);
   }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.auctionService.findOne(id);

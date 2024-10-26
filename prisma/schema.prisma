@@ -16,12 +16,13 @@ datasource db {
 model User {
   id               String              @id @default(uuid())
   email            String              @unique
-  image            String? // Changed from Bytes? to String?
+  image            String?      // base64 string
   role             Roles               @default(USER)
   password         String
   name             String?
   phone            String?
   points           Int                 @default(0)
+  address          Address[]
   orders           Order[]
   ratings          Rating[]
   favoriteProducts FavoriteProduct[]
@@ -29,13 +30,25 @@ model User {
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
 }
-
+model Address {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city      String
+  country   String
+  street    String
+  postalCode String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+} 
 model Product {
   id               String            @id @default(uuid())
   name             String
   description      String?
   price            Float
   image            String? //  base64 string
+  stock            Int             @default(0)
+  published        Boolean         @default(false)
   category         Category[]
   ratings          Rating[]
   orderItems       OrderItem[]
@@ -58,15 +71,17 @@ model AuctionSubscriber {
 }
 
 model Auction {
-  id          String              @id @default(uuid())
-  subscribers AuctionSubscriber[]
-  productId   String              @unique
-  product     Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
-  startPrice  Float
-  endPrice    Float
-  endTime     DateTime
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  id                 String              @id @default(uuid())
+  subscribers        AuctionSubscriber[]
+  productId          String              @unique
+  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  startPrice         Float
+  endPrice           Float
+  endTime            DateTime
+  isActive           Boolean             @default(true)
+  minPointsToSubscribe Int                @default(0)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 }
 
 model Variant {

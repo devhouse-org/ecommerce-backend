@@ -15,12 +15,13 @@ import { StaticsModule } from './statics/statics.module';
 import { RateModule } from './rate/rate.module';
 import { VariantModule } from './variant/variant.module';
 import { AuctionModule } from './auction/auction.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [PrismaModule, ProductModule, CategoryModule, OrderModule, UserModule, OrderItemModule, AuthModule,ServeStaticModule.forRoot({
     serveRoot: '/public',
     rootPath: join(__dirname, '..', 'public'),
-  }), StaticsModule, RateModule, VariantModule, AuctionModule,],
+  }), StaticsModule, RateModule, VariantModule, AuctionModule, ScheduleModule.forRoot()],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

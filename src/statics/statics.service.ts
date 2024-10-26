@@ -37,11 +37,11 @@ export class StaticsService {
     // total products
     const totalProducts = await this.prisma.product.count();
     return {
-      totalOrders:totalOrders.toLocaleString() ,
-      pendingOrders:pendingOrders.toLocaleString() ,
-      shippedOrders:shippedOrders.toLocaleString() ,
-      deliveredOrders:deliveredOrders.toLocaleString() ,
-      totalProducts:totalProducts.toLocaleString() ,
+      totalOrders:totalOrders.toLocaleString() || 0,
+      pendingOrders:pendingOrders.toLocaleString() || 0,
+      shippedOrders:shippedOrders.toLocaleString() || 0,
+      deliveredOrders:deliveredOrders.toLocaleString() || 0,
+      totalProducts:totalProducts.toLocaleString() || 0,
     };
   }
 

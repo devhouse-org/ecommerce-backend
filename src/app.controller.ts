@@ -22,7 +22,7 @@ export class AppController {
     return superUser;
   }
   // create admin user endpoint
-  @Post('admin/create')
+  @Get('admin/create')
   async createAdminUser() {
     return this.prisma.user.create({ data: {
       email: "admin@admin.com",

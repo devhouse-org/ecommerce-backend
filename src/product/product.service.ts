@@ -77,7 +77,12 @@ export class ProductService {
             where: { id },
             include: {
                 category: true,
-                ratings: true, // Make sure this is included
+                ratings: true,
+                variants: {
+                    include: {
+                        values: true,
+                    },
+                },
             }
         });
         if (!product) {

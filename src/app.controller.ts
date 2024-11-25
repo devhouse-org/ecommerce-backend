@@ -24,12 +24,16 @@ export class AppController {
   // create admin user endpoint
   @Get('admin/create')
   async createAdminUser() {
-    return this.prisma.user.create({ data: {
-      email: "admin@admin.com",
-      password: "admin",
-      name: "Super Admin",
-      role: Roles.ADMIN,
-    } });
+    try {
+      return await this.prisma.user.create({ data: {
+        email: "admin@admin.com",
+        password: "admin",
+        name: "Super Admin",
+        role: Roles.ADMIN,
+      } });
+    } catch (error) {
+      throw new HttpException('Failed to create admin user', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
   // seed end point
   @Get('seed/users')

@@ -1,6 +1,7 @@
-import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PrismaService } from './prisma/prisma.service';
+import { Roles } from '@prisma/client';
 
 @Controller()
 export class AppController {
@@ -19,6 +20,16 @@ export class AppController {
       },
     });
     return superUser;
+  }
+  // create admin user endpoint
+  @Post('admin/create')
+  async createAdminUser() {
+    return this.prisma.user.create({ data: {
+      email: "admin@admin.com",
+      password: "admin",
+      name: "Super Admin",
+      role: Roles.ADMIN,
+    } });
   }
   // seed end point
   @Get('seed/users')
